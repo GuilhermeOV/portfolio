@@ -10,6 +10,7 @@
 
   <meta property="og:type" content="website">
   <meta property="og:locale" content="pt_BR">
+  <meta property="og:locale:alternate" content="en_US">
   <meta property="og:title" content="Guilherme Vital · Analista de Dados &amp; BI | Planejamento e Supply Chain">
   <meta property="og:description" content="Painéis, automações em Python e ferramentas de decisão para planejamento, logística e comercial. Portfólio com demonstrações de dados fictícios.">
   <meta property="og:url" content="https://guilhermeov.github.io/portfolio/">
@@ -21,6 +22,8 @@
   <meta name="twitter:description" content="Painéis, automações em Python e ferramentas de decisão. Demonstrações com dados fictícios.">
   <meta name="twitter:image" content="https://guilhermeov.github.io/portfolio/assets/og-image.png">
   <link rel="canonical" href="https://guilhermeov.github.io/portfolio/">
+  <link rel="alternate" hreflang="pt-BR" href="https://guilhermeov.github.io/portfolio/?lang=pt">
+  <link rel="alternate" hreflang="en" href="https://guilhermeov.github.io/portfolio/?lang=en">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,26 +31,30 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
+  <a class="skip" href="#conteudo" data-i18n="skip">Pular para o conteúdo</a>
 
   <!-- 1. Topo fixo -->
   <header class="topbar" id="topo">
     <div class="wrap topbar-in">
-      <a class="brand" href="#inicio" aria-label="Guilherme Vital, voltar ao início">
+      <a class="brand" href="#inicio" aria-label="Guilherme Vital, voltar ao início" data-i18n-aria="brand">
         <span class="mono" aria-hidden="true">GV</span>
         <span class="brand-name">Guilherme Vital</span>
       </a>
+      <nav id="menu" class="menu" aria-label="Seções" data-i18n-aria="nav">
+        <a href="#projetos" data-i18n="nav.projetos">Projetos</a>
+        <a href="#impacto" data-i18n="nav.impacto">Impacto</a>
+        <a href="#trajetoria" data-i18n="nav.trajetoria">Trajetória</a>
+        <a href="#ferramentas" data-i18n="nav.ferramentas">Ferramentas</a>
+        <a href="#contato" data-i18n="nav.contato">Contato</a>
+        <a class="btn btn-primary btn-sm" href="curriculo-guilherme-vital.pdf" download data-i18n="nav.cv" data-i18n-href="cv">Baixar currículo</a>
+      </nav>
+      <div class="lang" role="group" aria-label="Idioma / Language">
+        <button type="button" data-lang="pt" aria-pressed="true" lang="pt-BR" title="Ver em português">PT</button>
+        <button type="button" data-lang="en" aria-pressed="false" lang="en" title="View in English">EN</button>
+      </div>
       <button class="burger" id="burger" aria-label="Abrir menu" aria-expanded="false" aria-controls="menu">
         <span></span><span></span><span></span>
       </button>
-      <nav id="menu" class="menu" aria-label="Seções">
-        <a href="#projetos">Projetos</a>
-        <a href="#impacto">Impacto</a>
-        <a href="#trajetoria">Trajetória</a>
-        <a href="#ferramentas">Ferramentas</a>
-        <a href="#contato">Contato</a>
-        <a class="btn btn-primary btn-sm" href="curriculo-guilherme-vital.pdf" download>Baixar currículo</a>
-      </nav>
     </div>
   </header>
 
@@ -56,16 +63,16 @@
     <section class="hero" id="inicio">
       <div class="wrap hero-in">
         <div class="hero-text">
-          <p class="eyebrow">Analista de Dados &amp; BI · Planejamento e Supply Chain</p>
+          <p class="eyebrow" data-i18n="hero.eyebrow">Analista de Dados &amp; BI · Planejamento e Supply Chain</p>
           <h1>Guilherme Vital</h1>
-          <p class="pitch">Transformo planilhas espalhadas em <strong>painéis vivos, automações e ferramentas de decisão</strong>, do pedido ao caminhão, da matéria-prima ao e-mail da sexta-feira.</p>
+          <p class="pitch" data-i18n="hero.pitch">Transformo planilhas espalhadas em <strong>painéis vivos, automações e ferramentas de decisão</strong>, do pedido ao caminhão, da matéria-prima ao e-mail da sexta-feira.</p>
           <div class="hero-cta">
-            <a class="btn btn-primary" href="#projetos">Ver projetos</a>
-            <a class="btn btn-ghost" href="#contato">Falar comigo</a>
+            <a class="btn btn-primary" href="#projetos" data-i18n="hero.ver">Ver projetos</a>
+            <a class="btn btn-ghost" href="#contato" data-i18n="hero.falar">Falar comigo</a>
           </div>
-          <p class="hero-sub">Uberaba, MG · aberto a vagas presenciais, híbridas e remotas.</p>
+          <p class="hero-sub" data-i18n="hero.sub">Uberaba, MG · aberto a vagas presenciais, híbridas e remotas.</p>
         </div>
-        <div class="hero-art" aria-label="Demonstração do Painel Supply com dados fictícios" role="img">
+        <div class="hero-art" aria-label="Demonstração do Painel Supply com dados fictícios" data-i18n-aria="hero.art" role="img">
           <div class="tilt" id="hero-mock"></div>
         </div>
       </div>
@@ -73,35 +80,35 @@
 
     <!-- Sobre -->
     <section class="about wrap" aria-labelledby="sobre-t">
-      <h2 id="sobre-t" class="sr-only">Sobre</h2>
+      <h2 id="sobre-t" class="sr-only" data-i18n="sobre.t">Sobre</h2>
       <div class="about-grid">
-        <p>Trabalho entre o comercial, a logística e a produção de uma <strong>indústria de insumos agrícolas (MG)</strong>. Com IA como copiloto, construí um ecossistema de S&amp;OE que roda de hora em hora: lê o ERP, alimenta as planilhas do time, gera painéis de uso diário, calcula o consumo de matéria-prima, programa cargas com previsão de chuva, monta os e-mails semanais por regional e transforma a carteira de um cliente numa apresentação pronta para a reunião.</p>
-        <p>Antes dos dados, foram mais de 4 anos na operação: rastreando cargas de risco e liberando caminhões na expedição. É por isso que meus painéis falam a língua de quem está no pátio e de quem está na reunião.</p>
+        <p data-i18n="sobre.p1">Trabalho entre o comercial, a logística e a produção de uma <strong>indústria de insumos agrícolas (MG)</strong>. Com IA como copiloto, construí um ecossistema de S&amp;OE que roda de hora em hora: lê o ERP, alimenta as planilhas do time, gera painéis de uso diário, calcula o consumo de matéria-prima, programa cargas com previsão de chuva, monta os e-mails semanais por regional e transforma a carteira de um cliente numa apresentação pronta para a reunião.</p>
+        <p data-i18n="sobre.p2">Antes dos dados, foram mais de 4 anos na operação: rastreando cargas de risco e liberando caminhões na expedição. É por isso que meus painéis falam a língua de quem está no pátio e de quem está na reunião.</p>
       </div>
     </section>
 
     <!-- 3. Contadores -->
     <section class="impact" id="impacto" aria-labelledby="impacto-t">
       <div class="wrap">
-        <h2 id="impacto-t" class="sr-only">Impacto em números</h2>
+        <h2 id="impacto-t" class="sr-only" data-i18n="impacto.t">Impacto em números</h2>
         <ul class="counters" id="counters"></ul>
-        <p class="note">Números de processo, não de negócio.</p>
+        <p class="note" data-i18n="impacto.note">Números de processo, não de negócio.</p>
       </div>
     </section>
 
     <!-- 4. Projetos -->
     <section class="section wrap" id="projetos" aria-labelledby="projetos-t">
       <div class="sec-head">
-        <p class="eyebrow">O que eu construí</p>
-        <h2 id="projetos-t">Projetos em produção</h2>
-        <p class="lead">Ferramentas usadas todo dia. Clique em um cartão para abrir a demonstração com dados fictícios.</p>
+        <p class="eyebrow" data-i18n="proj.eyebrow">O que eu construí</p>
+        <h2 id="projetos-t" data-i18n="proj.t">Projetos em produção</h2>
+        <p class="lead" data-i18n="proj.lead">Ferramentas usadas todo dia. Clique em um cartão para abrir a demonstração com dados fictícios.</p>
       </div>
-      <div class="seg" role="group" aria-label="Filtrar projetos por tipo" id="filters">
-        <button type="button" class="seg-btn is-on" data-f="todos" aria-pressed="true">Todos</button>
-        <button type="button" class="seg-btn" data-f="paineis" aria-pressed="false">Painéis</button>
-        <button type="button" class="seg-btn" data-f="automacao" aria-pressed="false">Automação</button>
+      <div class="seg" role="group" aria-label="Filtrar projetos por tipo" data-i18n-aria="proj.filtro" id="filters">
+        <button type="button" class="seg-btn is-on" data-f="todos" aria-pressed="true" data-i18n="f.todos">Todos</button>
+        <button type="button" class="seg-btn" data-f="paineis" aria-pressed="false" data-i18n="f.paineis">Painéis</button>
+        <button type="button" class="seg-btn" data-f="automacao" aria-pressed="false" data-i18n="f.automacao">Automação</button>
         <button type="button" class="seg-btn" data-f="apps" aria-pressed="false">Apps</button>
-        <button type="button" class="seg-btn" data-f="dados" aria-pressed="false">Dados</button>
+        <button type="button" class="seg-btn" data-f="dados" aria-pressed="false" data-i18n="f.dados">Dados</button>
       </div>
       <ul class="grid-proj" id="proj-grid"></ul>
     </section>
@@ -109,16 +116,16 @@
     <!-- 5. Modo apresentação -->
     <section class="section wrap" id="apresentacao" aria-labelledby="apres-t">
       <div class="sec-head">
-        <p class="eyebrow">Destaque · Painel do cliente</p>
-        <h2 id="apres-t">Modo apresentação</h2>
-        <p class="lead">Um botão transforma o recorte filtrado em slides prontos para a reunião com o cliente. Use as setas, os pontos ou as teclas ← →.</p>
+        <p class="eyebrow" data-i18n="apres.eyebrow">Destaque · Painel do cliente</p>
+        <h2 id="apres-t" data-i18n="apres.t">Modo apresentação</h2>
+        <p class="lead" data-i18n="apres.lead">Um botão transforma o recorte filtrado em slides prontos para a reunião com o cliente. Use as setas, os pontos ou as teclas ← →.</p>
       </div>
-      <div class="carousel" id="carousel" role="region" aria-roledescription="carrossel" aria-label="Slides do modo apresentação" tabindex="0">
+      <div class="carousel" id="carousel" role="region" aria-roledescription="carrossel" aria-label="Slides do modo apresentação" data-i18n-aria="apres.car" tabindex="0">
         <div class="car-stage"><div class="car-track" id="car-track"></div></div>
         <div class="car-ctrl">
-          <button type="button" class="icon-btn" id="car-prev" aria-label="Slide anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
-          <div class="car-dots" id="car-dots" role="group" aria-label="Escolher slide"></div>
-          <button type="button" class="icon-btn" id="car-next" aria-label="Próximo slide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+          <button type="button" class="icon-btn" id="car-prev" aria-label="Slide anterior" data-i18n-aria="apres.prev"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+          <div class="car-dots" id="car-dots" role="group" aria-label="Escolher slide" data-i18n-aria="apres.dots"></div>
+          <button type="button" class="icon-btn" id="car-next" aria-label="Próximo slide" data-i18n-aria="apres.next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
         </div>
         <p class="sr-only" aria-live="polite" id="car-live"></p>
       </div>
@@ -127,21 +134,21 @@
     <!-- 6. Mapa de risco de chuva -->
     <section class="section wrap" id="mapa" aria-labelledby="mapa-t">
       <div class="sec-head">
-        <p class="eyebrow">Destaque · Programação de faturamento CIF</p>
-        <h2 id="mapa-t">Mapa de risco de chuva</h2>
-        <p class="lead">Volume programado na semana por UF e risco de chuva no destino. A chuva é a mediana de 3 modelos meteorológicos, aferidos contra dado observado; carga só é cancelada no D-1.</p>
+        <p class="eyebrow" data-i18n="mapa.eyebrow">Destaque · Programação de faturamento CIF</p>
+        <h2 id="mapa-t" data-i18n="mapa.t">Mapa de risco de chuva</h2>
+        <p class="lead" data-i18n="mapa.lead">Volume programado na semana por UF e risco de chuva no destino. A chuva é a mediana de 3 modelos meteorológicos, aferidos contra dado observado; carga só é cancelada no D-1.</p>
       </div>
       <div class="card map-card">
         <div class="map-big" id="map-big"></div>
         <aside class="map-side">
-          <p class="label">Programado na semana</p>
+          <p class="label" data-i18n="mapa.prog">Programado na semana</p>
           <p class="kpi-num c-backlog" data-count="720" data-suffix=" t">720 t</p>
           <ul class="legend">
-            <li><span class="dot ok"></span>Seco</li>
-            <li><span class="dot warn"></span>Atenção · chuva fraca</li>
-            <li><span class="dot bad"></span>Chuva forte</li>
+            <li><span class="dot ok"></span><span data-i18n="mapa.seco">Seco</span></li>
+            <li><span class="dot warn"></span><span data-i18n="mapa.atencao">Atenção · chuva fraca</span></li>
+            <li><span class="dot bad"></span><span data-i18n="mapa.forte">Chuva forte</span></li>
           </ul>
-          <p class="small muted">Tamanho da bolha = volume. Passe o mouse ou foque uma bolha para ver UF, volume e risco.</p>
+          <p class="small muted" data-i18n="mapa.dica">Tamanho da bolha = volume. Passe o mouse ou foque uma bolha para ver UF, volume e risco.</p>
           <ol class="map-list" id="map-list"></ol>
         </aside>
       </div>
@@ -150,22 +157,22 @@
     <!-- 7. Como eu trabalho -->
     <section class="section wrap" id="como" aria-labelledby="como-t">
       <div class="sec-head">
-        <p class="eyebrow">Como eu penso</p>
-        <h2 id="como-t">Como eu trabalho</h2>
+        <p class="eyebrow" data-i18n="como.eyebrow">Como eu penso</p>
+        <h2 id="como-t" data-i18n="como.t">Como eu trabalho</h2>
       </div>
       <ul class="principles" id="principles"></ul>
       <div class="card flow-card">
-        <p class="label">O ecossistema</p>
-        <div class="eco" aria-label="Fluxo: ERP, depois Python de hora em hora, que alimenta planilhas do time, painéis HTML, e-mails semanais e apresentações">
-          <div class="eco-node eco-src"><strong>ERP</strong><span>pedidos, contratos, estoque, notas</span></div>
+        <p class="label" data-i18n="eco.t">O ecossistema</p>
+        <div class="eco" aria-label="Fluxo: ERP, depois Python de hora em hora, que alimenta planilhas do time, painéis HTML, e-mails semanais e apresentações" data-i18n-aria="eco.aria">
+          <div class="eco-node eco-src"><strong>ERP</strong><span data-i18n="eco.erp">pedidos, contratos, estoque, notas</span></div>
           <div class="eco-arrow" aria-hidden="true"></div>
-          <div class="eco-node eco-core"><strong>Python</strong><span>de hora em hora · agendado</span></div>
+          <div class="eco-node eco-core"><strong>Python</strong><span data-i18n="eco.py">de hora em hora · agendado</span></div>
           <div class="eco-arrow" aria-hidden="true"></div>
           <ul class="eco-outs">
-            <li>Planilhas do time</li>
-            <li>Painéis HTML</li>
-            <li>E-mails semanais</li>
-            <li>Apresentações</li>
+            <li data-i18n="eco.o1">Planilhas do time</li>
+            <li data-i18n="eco.o2">Painéis HTML</li>
+            <li data-i18n="eco.o3">E-mails semanais</li>
+            <li data-i18n="eco.o4">Apresentações</li>
           </ul>
         </div>
       </div>
@@ -174,8 +181,8 @@
     <!-- 8. Trajetória -->
     <section class="section wrap" id="trajetoria" aria-labelledby="traj-t">
       <div class="sec-head">
-        <p class="eyebrow">De onde eu vim</p>
-        <h2 id="traj-t">Trajetória</h2>
+        <p class="eyebrow" data-i18n="traj.eyebrow">De onde eu vim</p>
+        <h2 id="traj-t" data-i18n="traj.t">Trajetória</h2>
       </div>
       <ol class="timeline" id="timeline"></ol>
     </section>
@@ -183,8 +190,8 @@
     <!-- 9. Ferramentas -->
     <section class="section wrap" id="ferramentas" aria-labelledby="ferr-t">
       <div class="sec-head">
-        <p class="eyebrow">Com o que eu construo</p>
-        <h2 id="ferr-t">Ferramentas</h2>
+        <p class="eyebrow" data-i18n="ferr.eyebrow">Com o que eu construo</p>
+        <h2 id="ferr-t" data-i18n="ferr.t">Ferramentas</h2>
       </div>
       <div class="tools" id="tools"></div>
     </section>
@@ -192,21 +199,21 @@
     <!-- 10. Formação -->
     <section class="section wrap" id="formacao" aria-labelledby="form-t">
       <div class="sec-head">
-        <p class="eyebrow">Base</p>
-        <h2 id="form-t">Formação</h2>
+        <p class="eyebrow" data-i18n="form.eyebrow">Base</p>
+        <h2 id="form-t" data-i18n="form.t">Formação</h2>
       </div>
       <div class="edu">
         <div class="card edu-card">
-          <p class="label">Graduação</p>
-          <h3>Bacharelado em Sistemas de Informação</h3>
-          <p class="muted">Uniube · conclusão prevista em dez/2026</p>
+          <p class="label" data-i18n="form.grad">Graduação</p>
+          <h3 data-i18n="form.curso">Bacharelado em Sistemas de Informação</h3>
+          <p class="muted" data-i18n="form.uniube">Uniube · conclusão prevista em dez/2026</p>
         </div>
         <div class="card edu-card">
-          <p class="label">Idiomas</p>
-          <h3>Inglês intermediário</h3>
+          <p class="label" data-i18n="form.idiomas">Idiomas</p>
+          <h3 data-i18n="form.ingles">Inglês intermediário</h3>
         </div>
         <div class="card edu-card" id="certs-card" hidden>
-          <p class="label">Cursos e certificações</p>
+          <p class="label" data-i18n="form.certs">Cursos e certificações</p>
           <ul class="certs" id="certs"></ul>
         </div>
       </div>
@@ -217,15 +224,15 @@
       <div class="wrap">
         <div class="band contact-band">
           <div>
-            <h2 id="contato-t">Vamos conversar?</h2>
-            <p>Estou buscando vagas em dados, BI, sistemas e planejamento.</p>
-            <a class="btn btn-light" href="curriculo-guilherme-vital.pdf" download>Baixar currículo (PDF)</a>
+            <h2 id="contato-t" data-i18n="contato.t">Vamos conversar?</h2>
+            <p data-i18n="contato.p">Estou buscando vagas em dados, BI, sistemas e planejamento.</p>
+            <a class="btn btn-light" href="curriculo-guilherme-vital.pdf" download data-i18n="contato.cv" data-i18n-href="cv">Baixar currículo (PDF)</a>
           </div>
           <ul class="contact-list">
-            <li><a href="mailto:guilhermevitalgov@gmail.com"><span class="label">E-mail</span>guilhermevitalgov@gmail.com</a></li>
+            <li><a href="mailto:guilhermevitalgov@gmail.com"><span class="label" data-i18n="contato.email">E-mail</span>guilhermevitalgov@gmail.com</a></li>
             <li><a href="https://www.linkedin.com/in/guilherme-oliveira-vital-205451218" target="_blank" rel="noopener"><span class="label">LinkedIn</span>in/guilherme-oliveira-vital</a></li>
             <li><a href="https://github.com/GuilhermeOV" target="_blank" rel="noopener"><span class="label">GitHub</span>github.com/GuilhermeOV</a></li>
-            <li><a href="https://wa.me/5534999831256" target="_blank" rel="noopener"><span class="label">WhatsApp</span>(34) 9 9983-1256</a></li>
+            <li><a href="https://wa.me/5534999831256" target="_blank" rel="noopener"><span class="label">WhatsApp</span><span data-i18n="contato.fone">(34) 9 9983-1256</span></a></li>
           </ul>
         </div>
       </div>
@@ -234,8 +241,8 @@
 
   <footer class="footer">
     <div class="wrap footer-in">
-      <p>© 2026 Guilherme Oliveira Vital · Uberaba, MG</p>
-      <p><strong>Os dados das demonstrações são fictícios.</strong></p>
+      <p data-i18n="rodape.c">© 2026 Guilherme Oliveira Vital · Uberaba, MG</p>
+      <p data-i18n="rodape.aviso"><strong>Os dados das demonstrações são fictícios.</strong></p>
     </div>
   </footer>
 
@@ -243,14 +250,16 @@
   <div class="modal" id="modal" hidden>
     <div class="modal-backdrop" data-close></div>
     <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">
-      <button type="button" class="icon-btn modal-close" data-close aria-label="Fechar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      <button type="button" class="icon-btn modal-close" data-close aria-label="Fechar" data-i18n-aria="fechar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       <div id="modal-body"></div>
     </div>
   </div>
 
   <div class="tip" id="tip" role="tooltip" hidden></div>
 
+  <script src="js/i18n.js"></script>
   <script src="js/data.js"></script>
+  <script src="js/data-en.js"></script>
   <script src="js/brasil.js"></script>
   <script src="js/main.js"></script>
 </body>

@@ -10,13 +10,16 @@ Landing page de página única, em HTML, CSS e JavaScript puros. Sem framework, 
 portfolio/
 ├── index.html                 página
 ├── css/styles.css             estilos (tokens de cor em :root)
+├── js/i18n.js                 idioma (PT/EN): botão, detecção e textos fixos em inglês
 ├── js/data.js                 TODOS os textos e dados fictícios dos mockups
+├── js/data-en.js              os mesmos textos em inglês (EUA)
 ├── js/brasil.js               malha do Brasil por UF (gerada da API do IBGE)
 ├── js/main.js                 menu, contadores, modais, carrossel, filtros, mockups
 ├── assets/brasil.svg          o mesmo mapa em SVG avulso
 ├── assets/og-image.png        imagem de compartilhamento (1200×630)
 ├── assets/favicon.svg         monograma GV
-└── curriculo-guilherme-vital.pdf   currículo para download
+├── curriculo-guilherme-vital.pdf   currículo em português
+└── resume-guilherme-vital.pdf      currículo em inglês (baixado no modo EN)
 ```
 
 ## Antes de publicar
@@ -44,6 +47,14 @@ Para atualizar depois: entre no repositório, clique em **Add file → Upload fi
 ### Alternativa: Netlify (arrastar e soltar)
 
 Acesse <https://app.netlify.com/drop>, faça login e arraste a pasta `portfolio` inteira. Ele gera um endereço na hora, que pode ser renomeado em *Site settings*.
+
+## Português e inglês
+
+- O botão **PT | EN** no topo troca o idioma e lembra a escolha.
+- Link direto em inglês: `https://guilhermeov.github.io/portfolio/?lang=en` (use esse no currículo em inglês e nas candidaturas internacionais).
+- Sem `?lang`, quem tem o navegador em outro idioma que não português já abre em inglês.
+- Ao mudar um texto em `data.js`, mude também o equivalente em `data-en.js`. Textos fixos da página ficam no `index.html` (português) e em `js/i18n.js` (inglês).
+- Ao enviar o site para o GitHub, inclua os dois PDFs.
 
 ## Editar conteúdo
 

@@ -1,13 +1,31 @@
 /* Portfólio Guilherme Vital: menu, contadores, modais, carrossel, filtros e mockups.
-   Todos os números vêm de data.js e são fictícios. */
+   Todos os números vêm de data.js e são fictícios. Textos em inglês: data-en.js e tr(). */
 (function () {
   "use strict";
 
+  var L = window.I18N || { lang: "pt", locale: "pt-BR", tr: function (pt) { return pt; } };
+  var tr = L.tr, EN = L.lang === "en";
+
+  /* Mescla os textos em inglês sobre os dados (listas por posição; null mantém o original) */
+  function merge(base, over) {
+    if (over == null) return base;
+    if (Array.isArray(over)) {
+      over.forEach(function (v, i) { if (v != null) base[i] = (typeof v === "object" && base[i] != null && typeof base[i] === "object") ? merge(base[i], v) : v; });
+      return base;
+    }
+    if (typeof over === "object") {
+      Object.keys(over).forEach(function (k) { base[k] = (over[k] != null && typeof over[k] === "object" && base[k] != null && typeof base[k] === "object") ? merge(base[k], over[k]) : (over[k] == null ? base[k] : over[k]); });
+      return base;
+    }
+    return over;
+  }
   var D = window.PORTFOLIO;
+  if (EN && window.PORTFOLIO_EN) merge(D, window.PORTFOLIO_EN);
+
   var REDUCE = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
-  var fmt = function (n, dec) { return Number(n).toLocaleString("pt-BR", { minimumFractionDigits: dec || 0, maximumFractionDigits: dec || 0 }); };
+  var fmt = function (n, dec) { return Number(n).toLocaleString(L.locale, { minimumFractionDigits: dec || 0, maximumFractionDigits: dec || 0 }); };
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
   var t = function (n) { return fmt(n) + " t"; };
   var count = function (n, suf, pre, dec) {
@@ -28,8 +46,10 @@
   };
   var icon = function (k) { return '<svg viewBox="0 0 24 24" aria-hidden="true">' + ICONS[k] + "</svg>"; };
 
-  var CHUVA = { "seco": "ok", "chuva fraca": "warn", "chuva forte": "bad" };
-  var RISCO = { seco: ["seco", "ok"], atencao: ["atenção", "warn"], forte: ["chuva forte", "bad"] };
+  /* chave de chuva (data.js) → [texto, classe da pílula] */
+  var CHUVA = { "seco": [tr("seco", "dry"), "ok"], "chuva fraca": [tr("chuva fraca", "light rain"), "warn"], "chuva forte": [tr("chuva forte", "heavy rain"), "bad"] };
+  var RISCO = { seco: [tr("seco", "dry"), "ok"], atencao: [tr("atenção", "watch"), "warn"], forte: [tr("chuva forte", "heavy rain"), "bad"] };
+  var chuvaPill = function (k) { return '<span class="pill ' + CHUVA[k][1] + '">' + CHUVA[k][0] + "</span>"; };
 
   /* ---------- Gráfico de barras em SVG ---------- */
   function barChart(o) {
@@ -75,7 +95,7 @@
     var focus = {}; ufs.forEach(function (u) { focus[u.uf] = u; });
     var vb = o.crop ? "250 250 330 300" : "0 0 " + B.w + " " + B.h;
     var rmax = o.crop ? 46 : 42;
-    var s = '<svg class="map-svg anim' + (o.crop ? " crop" : "") + '" viewBox="' + vb + '" role="group" aria-label="Mapa do Brasil com volume programado na semana por UF e risco de chuva">';
+    var s = '<svg class="map-svg anim' + (o.crop ? " crop" : "") + '" viewBox="' + vb + '" role="group" aria-label="' + tr("Mapa do Brasil com volume programado na semana por UF e risco de chuva", "Map of Brazil with this week's scheduled volume by state and rain risk") + '">';
     Object.keys(B.uf).forEach(function (k) {
       s += '<path class="uf' + (focus[k] ? " focus" : "") + '" d="' + B.uf[k] + '"><title>' + k + "</title></path>";
     });
@@ -85,7 +105,7 @@
     ufs.slice().sort(function (a, b) { return b.volume - a.volume; }).forEach(function (u, i) {
       var c = B.centro[u.uf], r = Math.max(9, Math.sqrt(u.volume / ufs[0].volume) * rmax);
       var risk = RISCO[u.risco];
-      s += '<g class="bub" tabindex="0" role="img" style="animation-delay:' + (i * 0.12) + 's" data-uf="' + u.uf + '" aria-label="' + esc(u.nome + ": " + t(u.volume) + ", risco " + risk[0]) + '">' +
+      s += '<g class="bub" tabindex="0" role="img" style="animation-delay:' + (i * 0.12) + 's" data-uf="' + u.uf + '" aria-label="' + esc(u.nome + ": " + t(u.volume) + tr(", risco ", ", risk: ") + risk[0]) + '">' +
         '<circle class="r-' + u.risco + '" cx="' + c[0] + '" cy="' + c[1] + '" r="' + r.toFixed(1) + '"/>' +
         (r >= 14 ? '<text x="' + c[0] + '" y="' + (c[1] + 4.5) + '">' + u.uf + "</text>" : "") + "</g>";
     });
@@ -105,7 +125,7 @@
       var u = D.cif.ufs.filter(function (x) { return x.uf === g.getAttribute("data-uf"); })[0];
       var show = function () {
         var r = RISCO[u.risco], b = g.getBoundingClientRect();
-        tip.innerHTML = "<b>" + esc(u.nome) + " (" + u.uf + ")</b><br>Programado: " + t(u.volume) + "<br>Risco: " + r[0];
+        tip.innerHTML = "<b>" + esc(u.nome) + " (" + u.uf + ")</b><br>" + tr("Programado: ", "Scheduled: ") + t(u.volume) + "<br>" + tr("Risco: ", "Risk: ") + r[0];
         tip.hidden = false;
         var tw = tip.offsetWidth, x = Math.min(window.innerWidth - tw - 8, Math.max(8, b.left + b.width / 2 - tw / 2));
         tip.style.left = x + "px";
@@ -119,11 +139,12 @@
 
   /* ---------- Mockups ---------- */
   var M = {};
+  var PROG = tr("Programado", "Scheduled"), REAL = tr("Realizado", "Actual");
 
   M.supplyHero = function () {
     var S = D.supply;
     return '<div class="mock">' + supplyBand(S) +
-      '<div class="panel"><div class="panel-h"><h5>Semana CIF</h5>' + legend([["Programado", "#2563A8"], ["Realizado", "#1F8A55"]]) + "</div>" +
+      '<div class="panel"><div class="panel-h"><h5>' + tr("Semana CIF", "CIF week") + "</h5>" + legend([[PROG, "#2563A8"], [REAL, "#1F8A55"]]) + "</div>" +
       semanaChart(S, 150) + "</div></div>";
   };
 
@@ -133,23 +154,23 @@
   }
   function semanaChart(S, h) {
     return barChart({
-      id: "sem" + h, h: h, labels: S.semana.map(function (d) { return d.dia; }), unit: " t", hi: 4, aria: "Semana CIF: programado e realizado por dia",
-      series: [{ name: "Programado", color: "#2563A8", vals: S.semana.map(function (d) { return d.prog; }) },
-               { name: "Realizado", color: "#1F8A55", vals: S.semana.map(function (d) { return d.real; }) }]
+      id: "sem" + h, h: h, labels: S.semana.map(function (d) { return d.dia; }), unit: " t", hi: 4, aria: tr("Semana CIF: programado e realizado por dia", "CIF week: scheduled and actual by day"),
+      series: [{ name: PROG, color: "#2563A8", vals: S.semana.map(function (d) { return d.prog; }) },
+               { name: REAL, color: "#1F8A55", vals: S.semana.map(function (d) { return d.real; }) }]
     });
   }
 
   M.supply = function () {
     var S = D.supply;
     var rows = S.semana.map(function (d) {
-      return "<tr" + (d.hoje ? ' class="today"' : "") + "><td>" + d.dia + (d.hoje ? " (hoje)" : "") + '</td><td class="n">' + t(d.prog) + '</td><td class="n">' +
-        (d.real == null ? "—" : t(d.real)) + "</td><td>" + (d.nota ? '<span class="pill bad">' + d.nota + "</span>" : d.real == null ? "" : d.real >= d.prog ? '<span class="pill ok">ok</span>' : d.hoje ? '<span class="pill info">em curso</span>' : '<span class="pill warn">abaixo</span>') + "</td></tr>";
+      return "<tr" + (d.hoje ? ' class="today"' : "") + "><td>" + d.dia + (d.hoje ? tr(" (hoje)", " (today)") : "") + '</td><td class="n">' + t(d.prog) + '</td><td class="n">' +
+        (d.real == null ? "—" : t(d.real)) + "</td><td>" + (d.nota ? '<span class="pill bad">' + d.nota + "</span>" : d.real == null ? "" : d.real >= d.prog ? '<span class="pill ok">ok</span>' : d.hoje ? '<span class="pill info">' + tr("em curso", "in progress") + "</span>" : '<span class="pill warn">' + tr("abaixo", "below") + "</span>") + "</td></tr>";
     }).join("");
     return '<div class="mock">' + supplyBand(S) +
       '<div class="shortcuts">' + S.atalhos.map(function (a) { return '<div class="shortcut"><b>' + esc(a[0]) + " ›</b><span>" + esc(a[1]) + "</span></div>"; }).join("") + "</div>" +
-      '<div class="two even"><div class="panel"><div class="panel-h"><h5>Semana CIF</h5>' + legend([["Programado", "#2563A8"], ["Realizado", "#1F8A55"]]) + "</div>" + semanaChart(S, 220) + "</div>" +
-      '<div class="panel"><div class="tbl-wrap"><table><thead><tr><th>Dia</th><th class="n">Programado</th><th class="n">Realizado</th><th>Status</th></tr></thead><tbody>' + rows + "</tbody></table></div></div></div>" +
-      '<p class="mock-note">Gerado de hora em hora · dado de hoje, 09:00 · fonte: ERP + planilhas do time</p></div>';
+      '<div class="two even"><div class="panel"><div class="panel-h"><h5>' + tr("Semana CIF", "CIF week") + "</h5>" + legend([[PROG, "#2563A8"], [REAL, "#1F8A55"]]) + "</div>" + semanaChart(S, 220) + "</div>" +
+      '<div class="panel"><div class="tbl-wrap"><table><thead><tr><th>' + tr("Dia", "Day") + '</th><th class="n">' + PROG + '</th><th class="n">' + REAL + "</th><th>Status</th></tr></thead><tbody>" + rows + "</tbody></table></div></div></div>" +
+      '<p class="mock-note">' + tr("Gerado de hora em hora · dado de hoje, 09:00 · fonte: ERP + planilhas do time", "Rebuilt every hour · data as of today, 9:00 AM · source: ERP + team spreadsheets") + "</p></div>";
   };
 
   function ring(pct, color) {
@@ -159,44 +180,47 @@
 
   M.cliente = function () {
     var C = D.cliente, K = C.kpis;
+    var VEND = tr("Vendido", "Sold"), FAT = tr("Faturado", "Billed");
     var kp = '<div class="kpis k4">' +
-      '<div class="kpi"><p class="label">Vendido</p><p class="kpi-num c-sold">' + count(K.vendido, " t") + '</p><p class="sub"><span class="up">▲ ' + fmt(K.varVendido, 1) + "%</span> vs 2025</p></div>" +
-      '<div class="kpi"><p class="label">Faturado</p><p class="kpi-num c-billed">' + count(K.faturado, " t") + '</p><p class="sub">' + ring(K.atendimento, "#1F8A55") + K.atendimento + "% atendimento</p></div>" +
-      '<div class="kpi"><p class="label">Saldo em carteira</p><p class="kpi-num c-backlog">' + count(K.saldo, " t") + '</p><div class="split" aria-hidden="true"><i style="width:' + K.convencional + '%"></i><i style="width:' + K.parceria + '%"></i></div><p class="sub">convencional ' + K.convencional + "% · parceria " + K.parceria + "%</p></div>" +
-      '<div class="kpi"><p class="label">Cadenciado no mês</p><p class="kpi-num c-cadence">' + count(K.cadenciado, " t") + '</p><p class="sub">outubro 2026</p></div></div>';
-    var chart = '<div class="panel"><div class="panel-h"><h5>Mês a mês · índice (jan/2025 = 100)</h5>' + legend([["Vendido", "#C48E2C"], ["Faturado", "#1F8A55"], ["Vendido 2025", "#8A5A0F", true]]) + "</div>" +
-      barChart({ id: "cli", h: 230, labels: C.meses, unit: "", hi: 9, aria: "Vendido e faturado mês a mês em índice, com linha tracejada de 2025",
-        series: [{ name: "Vendido", grad: ["#D6A23F", "#B37B1C"], vals: C.vendido }, { name: "Faturado", color: "#1F8A55", vals: C.faturado }],
+      '<div class="kpi"><p class="label">' + VEND + '</p><p class="kpi-num c-sold">' + count(K.vendido, " t") + '</p><p class="sub"><span class="up">▲ ' + fmt(K.varVendido, 1) + "%</span> vs 2025</p></div>" +
+      '<div class="kpi"><p class="label">' + FAT + '</p><p class="kpi-num c-billed">' + count(K.faturado, " t") + '</p><p class="sub">' + ring(K.atendimento, "#1F8A55") + K.atendimento + tr("% atendimento", "% fulfilled") + "</p></div>" +
+      '<div class="kpi"><p class="label">' + tr("Saldo em carteira", "Order backlog") + '</p><p class="kpi-num c-backlog">' + count(K.saldo, " t") + '</p><div class="split" aria-hidden="true"><i style="width:' + K.convencional + '%"></i><i style="width:' + K.parceria + '%"></i></div><p class="sub">' +
+        tr("convencional ", "standard ") + K.convencional + tr("% · parceria ", "% · partnership ") + K.parceria + "%</p></div>" +
+      '<div class="kpi"><p class="label">' + tr("Cadenciado no mês", "Scheduled this month") + '</p><p class="kpi-num c-cadence">' + count(K.cadenciado, " t") + '</p><p class="sub">' + tr("outubro 2026", "October 2026") + "</p></div></div>";
+    var chart = '<div class="panel"><div class="panel-h"><h5>' + tr("Mês a mês · índice (jan/2025 = 100)", "Month by month · index (Jan 2025 = 100)") + "</h5>" + legend([[VEND, "#C48E2C"], [FAT, "#1F8A55"], [VEND + " 2025", "#8A5A0F", true]]) + "</div>" +
+      barChart({ id: "cli", h: 230, labels: C.meses, unit: "", hi: 9, aria: tr("Vendido e faturado mês a mês em índice, com linha tracejada de 2025", "Sold and billed month by month as an index, with a dashed 2025 line"),
+        series: [{ name: VEND, grad: ["#D6A23F", "#B37B1C"], vals: C.vendido }, { name: FAT, color: "#1F8A55", vals: C.faturado }],
         line: { vals: C.vendido2025, color: "#8A5A0F" } }) + "</div>";
     var max = C.maiores[0].vendido;
-    var top = '<div class="panel"><div class="panel-h"><h5>Maiores clientes</h5></div><div class="hbars anim">' + C.maiores.map(function (m) {
+    var top = '<div class="panel"><div class="panel-h"><h5>' + tr("Maiores clientes", "Top customers") + '</h5></div><div class="hbars anim">' + C.maiores.map(function (m) {
       return '<div class="hbar"><span>' + esc(m.nome) + "</span><b>" + t(m.vendido) + '</b><div class="track"><i class="bar-x" style="width:' + (m.vendido / max * 100).toFixed(1) + '%"></i></div></div>';
     }).join("") + "</div></div>";
     var rows = C.maiores.map(function (m) {
       var at = Math.round(m.faturado / m.vendido * 100);
-      return "<tr><td>" + esc(m.nome) + '</td><td class="n">' + t(m.vendido) + '</td><td class="n">' + t(m.faturado) + '</td><td><span class="minibar"><i style="width:' + at + '%"></i></span>' + at + '%</td><td class="n">' + t(m.vendido - m.faturado) + "</td><td>" + m.ult + '</td><td><button type="button" class="link-like" data-present style="border:0;background:none;padding:0">Apresentar ›</button></td></tr>';
+      return "<tr><td>" + esc(m.nome) + '</td><td class="n">' + t(m.vendido) + '</td><td class="n">' + t(m.faturado) + '</td><td><span class="minibar"><i style="width:' + at + '%"></i></span>' + at + '%</td><td class="n">' + t(m.vendido - m.faturado) + "</td><td>" + m.ult +
+        '</td><td><button type="button" class="link-like" data-present style="border:0;background:none;padding:0">' + tr("Apresentar ›", "Present ›") + "</button></td></tr>";
     }).join("");
     return '<div class="mock">' + kp + '<div class="two">' + chart + top + "</div>" +
-      '<div class="panel"><div class="tbl-wrap"><table><thead><tr><th>Cliente</th><th class="n">Vendido</th><th class="n">Faturado</th><th>Atendimento</th><th class="n">Saldo</th><th>Últ. carregamento</th><th></th></tr></thead><tbody>' + rows + "</tbody></table></div></div></div>";
+      '<div class="panel"><div class="tbl-wrap"><table><thead><tr><th>' + tr("Cliente", "Customer") + '</th><th class="n">' + VEND + '</th><th class="n">' + FAT + "</th><th>" + tr("Atendimento", "Fulfillment") + '</th><th class="n">' + tr("Saldo", "Balance") + "</th><th>" + tr("Últ. carregamento", "Last load") + "</th><th></th></tr></thead><tbody>" + rows + "</tbody></table></div></div></div>";
   };
 
   M.cif = function () {
     var C = D.cif;
     var kp = '<div class="kpis k3">' + C.kpis.map(function (k) { return '<div class="kpi"><p class="label">' + k[0] + '</p><p class="kpi-num ' + k[2] + '">' + count(k[1], " t") + "</p></div>"; }).join("") + "</div>";
     var days = '<div class="days">' + C.dias.map(function (d) {
-      return '<div class="day"><b>' + d.dia + '</b><span class="muted">Prog. ' + t(d.prog) + "</span><span>Real. " + (d.real == null ? "—" : t(d.real)) + '</span><span class="pill ' + CHUVA[d.chuva] + '">' + d.chuva + "</span></div>";
+      return '<div class="day"><b>' + d.dia + '</b><span class="muted">' + tr("Prog. ", "Sched. ") + t(d.prog) + "</span><span>" + tr("Real. ", "Actual ") + (d.real == null ? "—" : t(d.real)) + "</span>" + chuvaPill(d.chuva) + "</div>";
     }).join("") + "</div>";
     var rows = C.tabela.map(function (r) {
-      return "<tr><td>" + esc(r.cliente) + "</td><td>" + esc(r.mun) + '</td><td class="n">' + t(r.pot) + '</td><td class="n">' + t(r.prog) + '</td><td class="n">' + t(r.real) + '</td><td><span class="pill ' + CHUVA[r.chuva] + '">' + r.chuva + "</span></td></tr>";
+      return "<tr><td>" + esc(r.cliente) + "</td><td>" + esc(r.mun) + '</td><td class="n">' + t(r.pot) + '</td><td class="n">' + t(r.prog) + '</td><td class="n">' + t(r.real) + "</td><td>" + chuvaPill(r.chuva) + "</td></tr>";
     }).join("");
     return '<div class="mock">' + kp + days +
-      '<div class="panel"><div class="panel-h"><h5>Risco de chuva por UF</h5>' + legend([["Seco", "#1F8A55"], ["Atenção", "#D9792F"], ["Chuva forte", "#B42318"]]) + '</div><div class="map-big">' + mapSVG({ crop: true }) + '</div><ol class="map-list">' + mapList() + "</ol></div>" +
-      '<div class="panel"><div class="tbl-wrap"><table><thead><tr><th>Cliente</th><th>Município</th><th class="n">Potencial</th><th class="n">Programado</th><th class="n">Realizado</th><th>Chuva</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
-      '<p class="mock-note">Mediana de 3 modelos · confiança cai com a antecedência · cancelar carga só no D-1</p></div></div>';
+      '<div class="panel"><div class="panel-h"><h5>' + tr("Risco de chuva por UF", "Rain risk by state") + "</h5>" + legend([[tr("Seco", "Dry"), "#1F8A55"], [tr("Atenção", "Watch"), "#D9792F"], [tr("Chuva forte", "Heavy rain"), "#B42318"]]) + '</div><div class="map-big">' + mapSVG({ crop: true }) + '</div><ol class="map-list">' + mapList() + "</ol></div>" +
+      '<div class="panel"><div class="tbl-wrap"><table><thead><tr><th>' + tr("Cliente", "Customer") + "</th><th>" + tr("Município", "City") + '</th><th class="n">' + tr("Potencial", "Potential") + '</th><th class="n">' + PROG + '</th><th class="n">' + REAL + "</th><th>" + tr("Chuva", "Rain") + "</th></tr></thead><tbody>" + rows + "</tbody></table></div>" +
+      '<p class="mock-note">' + tr("Mediana de 3 modelos · confiança cai com a antecedência · cancelar carga só no D-1", "Median of 3 models · confidence drops with lead time · cancel loads only at D-1") + "</p></div></div>";
   };
 
   var MP_SCALE = 160, MP_SIM = 1.25;
-  function mpStatus(c) { return c < 50 ? ["FALTA", "bad"] : c < 100 ? ["ATENÇÃO", "warn"] : ["OK", "ok"]; }
+  function mpStatus(c) { return c < 50 ? [tr("FALTA", "SHORT"), "bad"] : c < 100 ? [tr("ATENÇÃO", "WATCH"), "warn"] : ["OK", "ok"]; }
   function mpRows(sim) {
     return D.mp.itens.map(function (it) {
       var c = sim ? it.cobertura / MP_SIM : it.cobertura, st = mpStatus(c);
@@ -207,47 +231,52 @@
     }).join("");
   }
   M.mp = function () {
-    var P = D.mp;
+    var P = D.mp, nm = P.itens.map(function (i) { return i.nome; });
+    var formulas = [[tr("Produto A", "Product A"), [nm[0], nm[3]]], [tr("Produto B", "Product B"), [nm[2], nm[1]]], [tr("Produto C", "Product C"), [nm[4], nm[5]]]];
     var kp = '<div class="kpis k4">' + P.kpis.map(function (k) { return '<div class="kpi"><p class="label">' + k[0] + '</p><p class="kpi-num ' + k[2] + '">' + k[1] + "</p>" + (k[3] ? '<p class="sub">' + k[3] + "</p>" : "") + "</div>"; }).join("") + "</div>";
-    return '<div class="mock">' + kp + '<div class="panel"><div class="panel-h"><h5>Cobertura por matéria-prima · menor primeiro</h5><div style="display:flex;gap:8px;flex-wrap:wrap">' +
-      '<button type="button" class="btn btn-ghost btn-sm" data-mp-det aria-expanded="false">Detalhes dos produtos</button>' +
-      '<button type="button" class="btn btn-sim btn-sm" data-mp-sim aria-pressed="false">Simular venda</button></div></div>' +
-      '<p class="sim-note" data-mp-note hidden>Simulação: pedido hipotético de +25% na cadência. Nada foi vendido.</p>' +
+    return '<div class="mock">' + kp + '<div class="panel"><div class="panel-h"><h5>' + tr("Cobertura por matéria-prima · menor primeiro", "Coverage by raw material · lowest first") + '</h5><div style="display:flex;gap:8px;flex-wrap:wrap">' +
+      '<button type="button" class="btn btn-ghost btn-sm" data-mp-det aria-expanded="false">' + tr("Detalhes dos produtos", "Product details") + "</button>" +
+      '<button type="button" class="btn btn-sim btn-sm" data-mp-sim aria-pressed="false">' + tr("Simular venda", "Simulate a sale") + "</button></div></div>" +
+      '<p class="sim-note" data-mp-note hidden>' + tr("Simulação: pedido hipotético de +25% na cadência. Nada foi vendido.", "Simulation: a hypothetical order adding 25% to the schedule. Nothing was actually sold.") + "</p>" +
       '<div class="cov anim" data-mp-rows>' + mpRows(false) + "</div>" +
-      '<div class="cov-legend"><span>Barra azul = estoque de hoje</span><span>Marca preta = saldo de cadência (100%)</span><span class="c-sim">Hachurado roxo = consumo do pedido hipotético</span></div>' +
-      '<div data-mp-detail hidden style="margin-top:12px"><div class="tbl-wrap"><table><thead><tr><th>Produto (fictício)</th><th>Fórmula</th></tr></thead><tbody>' +
-      "<tr><td>Produto A</td><td>Fosfato 140 · Gesso</td></tr><tr><td>Produto B</td><td>Silicato MG+ · Óxido de magnésio</td></tr><tr><td>Produto C</td><td>Silicato Plus · Fosfato 100</td></tr>" +
+      '<div class="cov-legend"><span>' + tr("Barra azul = estoque de hoje", "Blue bar = today's inventory") + "</span><span>" + tr("Marca preta = saldo de cadência (100%)", "Black mark = remaining schedule (100%)") + '</span><span class="c-sim">' + tr("Hachurado roxo = consumo do pedido hipotético", "Purple hatching = hypothetical order consumption") + "</span></div>" +
+      '<div data-mp-detail hidden style="margin-top:12px"><div class="tbl-wrap"><table><thead><tr><th>' + tr("Produto (fictício)", "Product (fictional)") + "</th><th>" + tr("Fórmula", "Formula") + "</th></tr></thead><tbody>" +
+      formulas.map(function (f) { return "<tr><td>" + f[0] + "</td><td>" + f[1].map(esc).join(" · ") + "</td></tr>"; }).join("") +
       "</tbody></table></div></div></div></div>";
   };
 
   M.precos = function () {
     var P = D.precos;
-    var pill = function (s) { return '<span class="pill ' + (s === "aprovada" ? "ok" : "warn") + '">' + s + "</span>"; };
+    var ST = { "aprovada": [tr("aprovada", "approved"), "ok"], "em revisão": [tr("em revisão", "in review"), "warn"] };
+    var pill = function (s) { return '<span class="pill ' + ST[s][1] + '">' + ST[s][0] + "</span>"; };
     return '<div class="mock"><div class="phone-row">' +
-      '<div class="app-screen"><div class="app-bar">Versões da lista <span>filtro: todas</span></div><ul class="app-list">' +
-      P.versoes.map(function (v) { return "<li><span>" + esc(v.nome) + "<small>alterada em " + v.data + "</small></span>" + pill(v.status) + "</li>"; }).join("") + "</ul></div>" +
-      '<div class="app-screen"><div class="app-bar">Composição · Produto A <span>v3 · em revisão</span></div><ul class="app-list">' +
+      '<div class="app-screen"><div class="app-bar">' + tr("Versões da lista", "List versions") + " <span>" + tr("filtro: todas", "filter: all") + '</span></div><ul class="app-list">' +
+      P.versoes.map(function (v) { return "<li><span>" + esc(v.nome) + "<small>" + tr("alterada em ", "updated ") + v.data + "</small></span>" + pill(v.status) + "</li>"; }).join("") + "</ul></div>" +
+      '<div class="app-screen"><div class="app-bar">' + tr("Composição · Produto A", "Price build-up · Product A") + " <span>" + tr("v3 · em revisão", "v3 · in review") + '</span></div><ul class="app-list">' +
       P.composicao.map(function (c, i) { return "<li" + (i === P.composicao.length - 1 ? ' class="total"' : "") + "><span>" + esc(c) + '</span><span class="rs">R$ --</span></li>'; }).join("") +
-      '<li><span><small>Trava: valores fora da faixa esperada bloqueiam a aprovação</small></span><span class="pill sim">futuro = simulação</span></li></ul></div>' +
-      '</div><p class="mock-note">Só a estrutura do app. Nenhum preço, custo ou margem é exibido.</p></div>';
+      "<li><span><small>" + tr("Trava: valores fora da faixa esperada bloqueiam a aprovação", "Guardrail: values outside the expected range block approval") + '</small></span><span class="pill sim">' + tr("futuro = simulação", "future = simulation") + "</span></li></ul></div>" +
+      '</div><p class="mock-note">' + tr("Só a estrutura do app. Nenhum preço, custo ou margem é exibido.", "App structure only. No price, cost or margin is shown.") + "</p></div>";
   };
 
   M.rotina = function () {
-    var R = D.rotina, map = { alto: "bad", medio: "warn", baixo: "ok" }, lbl = { alto: "alto", medio: "médio", baixo: "baixo" };
-    return '<div class="mock"><div class="email"><div class="email-meta"><span><b>Para:</b> gerentes da regional</span><span><b>Assunto:</b> Ações da semana · sexta-feira</span></div>' +
-      '<div class="email-head"><b>Ações da semana · ' + esc(R.regional) + "</b><span>Gerado automaticamente · carteira de alto risco atualizada hoje</span></div>" +
-      '<div class="email-body"><p>Bom dia! Abaixo, os contratos que pedem ação nesta semana, ordenados pelo score de risco.</p><div class="tbl-wrap"><table><thead><tr><th>Contrato</th><th>Cliente</th><th class="n">Saldo</th><th>Motivo principal</th><th>Risco</th></tr></thead><tbody>' +
+    var R = D.rotina, map = { alto: "bad", medio: "warn", baixo: "ok" };
+    var lbl = { alto: tr("alto", "high"), medio: tr("médio", "medium"), baixo: tr("baixo", "low") };
+    var acoes = tr("Ações da semana", "This week's actions");
+    return '<div class="mock"><div class="email"><div class="email-meta"><span><b>' + tr("Para:", "To:") + "</b> " + tr("gerentes da regional", "regional managers") + "</span><span><b>" + tr("Assunto:", "Subject:") + "</b> " + acoes + tr(" · sexta-feira", " · Friday") + "</span></div>" +
+      '<div class="email-head"><b>' + acoes + " · " + esc(R.regional) + "</b><span>" + tr("Gerado automaticamente · carteira de alto risco atualizada hoje", "Auto-generated · high-risk backlog refreshed today") + "</span></div>" +
+      '<div class="email-body"><p>' + tr("Bom dia! Abaixo, os contratos que pedem ação nesta semana, ordenados pelo score de risco.", "Good morning! Below are the contracts that need action this week, sorted by risk score.") + '</p><div class="tbl-wrap"><table><thead><tr><th>' +
+      tr("Contrato", "Contract") + "</th><th>" + tr("Cliente", "Customer") + '</th><th class="n">' + tr("Saldo", "Balance") + "</th><th>" + tr("Motivo principal", "Main reason") + "</th><th>" + tr("Risco", "Risk") + "</th></tr></thead><tbody>" +
       R.contratos.map(function (c) { return "<tr><td>" + c.contrato + "</td><td>" + esc(c.cliente) + '</td><td class="n">' + t(c.saldo) + "</td><td>" + esc(c.motivo) + '</td><td><span class="pill ' + map[c.risco] + '">' + lbl[c.risco] + "</span></td></tr>"; }).join("") +
-      '</tbody></table></div><p class="muted small">Score com 9 critérios · comparação com a média do mesmo período dos anos anteriores.</p></div></div></div>';
+      '</tbody></table></div><p class="muted small">' + tr("Score com 9 critérios · comparação com a média do mesmo período dos anos anteriores.", "9-criteria score · compared with the average for the same period in prior years.") + "</p></div></div></div>";
   };
 
   M.erp = function () {
     var n = function (b, s, core) { return '<div class="flow-node' + (core ? " core" : "") + '"><b>' + b + "</b><span>" + s + "</span></div>"; };
     var a = '<div class="flow-arrow" aria-hidden="true">→</div>';
-    return '<div class="mock"><div class="panel"><div class="flow">' + n("ERP", "estoque, pedidos, contratos, notas") + a + n("Power Query", "consultas de leitura no Excel") + a +
-      n("Python", "de hora em hora", true) + a + n("Planilhas + painéis", "time, painéis HTML, e-mails") + '</div></div>' +
-      '<div class="panel" style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between"><span class="seal">dado de hoje, 09:00</span>' +
-      '<span class="small muted">Se o banco não responder, os painéis usam o último retrato local e mostram o aviso.</span></div></div>';
+    return '<div class="mock"><div class="panel"><div class="flow">' + n("ERP", tr("estoque, pedidos, contratos, notas", "inventory, orders, contracts, invoices")) + a + n("Power Query", tr("consultas de leitura no Excel", "read-only queries in Excel")) + a +
+      n("Python", tr("de hora em hora", "every hour"), true) + a + n(tr("Planilhas + painéis", "Spreadsheets + dashboards"), tr("time, painéis HTML, e-mails", "team files, HTML dashboards, emails")) + "</div></div>" +
+      '<div class="panel" style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between"><span class="seal">' + tr("dado de hoje, 09:00", "data as of today, 9:00 AM") + "</span>" +
+      '<span class="small muted">' + tr("Se o banco não responder, os painéis usam o último retrato local e mostram o aviso.", "If the database doesn't respond, the dashboards use the last local snapshot and show a notice.") + "</span></div></div>";
   };
 
   function bindMock(root) {
@@ -313,13 +342,13 @@
   grid.innerHTML = D.projetos.map(function (p) {
     return '<li data-f="' + p.filtros.join(" ") + '"><button type="button" class="proj" data-slug="' + p.slug + '" aria-haspopup="dialog">' +
       '<span class="proj-ico">' + icon(p.icone) + "</span><h3>" + esc(p.titulo) + "</h3>" +
-      '<p class="pb"><b>Problema</b>' + esc(p.problema) + '</p><p class="pb"><b>Solução</b>' + esc(p.solucao) + "</p>" +
+      '<p class="pb"><b>' + tr("Problema", "Problem") + "</b>" + esc(p.problema) + '</p><p class="pb"><b>' + tr("Solução", "Solution") + "</b>" + esc(p.solucao) + "</p>" +
       "<ul>" + p.bullets.map(function (b) { return "<li>" + esc(b) + "</li>"; }).join("") + "</ul>" +
       '<span class="tags">' + p.tags.map(function (x) { return '<span class="tag">' + esc(x) + "</span>"; }).join("") + "</span>" +
-      '<span class="open">Abrir demonstração ›</span></button></li>';
-  }).join("") + '<li data-f="todos"><div class="proj proj-cta"><h3>Quer ver como isso funciona na prática?</h3>' +
-    '<p class="pb">Mostro o fluxo completo numa conversa: do dado bruto ao painel que o time usa todo dia.</p>' +
-    '<a class="btn btn-light btn-sm" href="#contato">Falar comigo</a></div></li>';
+      '<span class="open">' + tr("Abrir demonstração ›", "Open demo ›") + "</span></button></li>";
+  }).join("") + '<li data-f="todos"><div class="proj proj-cta"><h3>' + tr("Quer ver como isso funciona na prática?", "Want to see how it works in practice?") + "</h3>" +
+    '<p class="pb">' + tr("Mostro o fluxo completo numa conversa: do dado bruto ao painel que o time usa todo dia.", "I'll walk you through the full flow on a call: from raw data to the dashboard the team uses every day.") + "</p>" +
+    '<a class="btn btn-light btn-sm" href="#contato">' + tr("Falar comigo", "Get in touch") + "</a></div></li>";
 
   $$("#filters .seg-btn").forEach(function (b) {
     b.addEventListener("click", function () {
@@ -341,10 +370,10 @@
     lastFocus = opener || document.activeElement;
     body.innerHTML = '<div class="case-head"><p class="eyebrow">' + p.tags.slice(0, 3).map(esc).join(" · ") + '</p><h3 id="modal-title">' + esc(p.titulo) + "</h3></div>" +
       M[p.mockup]() +
-      '<div class="case-grid"><div class="case-box"><span class="label">Problema</span>' + esc(p.problema) + '</div><div class="case-box"><span class="label">Solução</span>' + esc(p.solucao) + "</div>" +
-      '<div class="case-box"><span class="label">Destaques</span><ul>' + p.bullets.map(function (b) { return "<li>" + esc(b) + "</li>"; }).join("") + "</ul></div></div>" +
+      '<div class="case-grid"><div class="case-box"><span class="label">' + tr("Problema", "Problem") + "</span>" + esc(p.problema) + '</div><div class="case-box"><span class="label">' + tr("Solução", "Solution") + "</span>" + esc(p.solucao) + "</div>" +
+      '<div class="case-box"><span class="label">' + tr("Destaques", "Highlights") + "</span><ul>" + p.bullets.map(function (b) { return "<li>" + esc(b) + "</li>"; }).join("") + "</ul></div></div>" +
       '<div class="tags">' + p.tags.map(function (x) { return '<span class="tag">' + esc(x) + "</span>"; }).join("") + "</div>" +
-      '<p class="mock-note">Demonstração recriada em HTML/CSS. Dados fictícios em escala ilustrativa.</p>';
+      '<p class="mock-note">' + tr("Demonstração recriada em HTML/CSS. Dados fictícios em escala ilustrativa.", "Demo rebuilt in HTML/CSS. Fictional data at an illustrative scale.") + "</p>";
     modal.hidden = false;
     document.body.style.overflow = "hidden";
     box.scrollTop = 0;
@@ -383,36 +412,39 @@
   /* ---------- Carrossel ---------- */
   var S = D.slides;
   var slides = [
-    '<div class="slide slide-cover"><p class="label">Modo apresentação · Painel do cliente</p><h3>Posição de carteira · ' + S.periodo + '</h3><p class="sl-sub">' + esc(S.cliente) + "</p></div>",
+    '<div class="slide slide-cover"><p class="label">' + tr("Modo apresentação · Painel do cliente", "Presentation mode · Customer Dashboard") + "</p><h3>" + tr("Posição de carteira · ", "Backlog position · ") + S.periodo + '</h3><p class="sl-sub">' + esc(S.cliente) + "</p></div>",
 
-    '<div class="slide"><p class="label">1 · Onde estamos</p><h3><em>' + count(S.aRetirar, " t") + "</em> a retirar, de " + t(S.contratado) + ' contratadas</h3>' +
-      '<div class="sl-bar-lbl"><span>Retirado ' + fmt(S.retiradoPct, 1) + "%</span><span>a retirar " + fmt(100 - S.retiradoPct, 1) + '%</span></div><div class="sl-bar"><i class="bar-x" style="width:' + S.retiradoPct + '%"></i></div>' +
+    '<div class="slide"><p class="label">' + tr("1 · Onde estamos", "1 · Where we stand") + "</p><h3><em>" + count(S.aRetirar, " t") + "</em>" + tr(" a retirar, de ", " left to pick up, out of ") + t(S.contratado) + tr(" contratadas", " contracted") + "</h3>" +
+      '<div class="sl-bar-lbl"><span>' + tr("Retirado ", "Picked up ") + fmt(S.retiradoPct, 1) + "%</span><span>" + tr("a retirar ", "left ") + fmt(100 - S.retiradoPct, 1) + '%</span></div><div class="sl-bar"><i class="bar-x" style="width:' + S.retiradoPct + '%"></i></div>' +
       '<div class="sl-cards">' + S.vencimentos.map(function (v) { return '<div class="sl-card ' + v[2] + '"><span>' + v[0] + "</span><b>" + count(v[1], " t") + "</b></div>"; }).join("") + "</div></div>",
 
-    '<div class="slide"><p class="label">2 · O mês</p><h3>No ritmo atual, outubro fecha em <em>~' + t(S.mes.projecao) + "</em>: faltam " + t(S.mes.falta) + ' para a cadência</h3>' +
-      '<div class="sl-cards" style="--n:4"><div class="sl-card"><span>Cadenciado</span><b>' + count(S.mes.cadenciado, " t") + '</b></div><div class="sl-card ok"><span>Faturado até hoje</span><b>' + count(S.mes.faturado, " t") +
-      '</b></div><div class="sl-card"><span>Projeção</span><b>~' + t(S.mes.projecao) + '</b></div><div class="sl-card warn"><span>Saldo de cadência</span><b>' + count(S.mes.saldoCadencia, " t") + "</b></div></div>" +
+    '<div class="slide"><p class="label">' + tr("2 · O mês", "2 · This month") + "</p><h3>" +
+      tr("No ritmo atual, outubro fecha em <em>~" + t(S.mes.projecao) + "</em>: faltam " + t(S.mes.falta) + " para a cadência",
+         "At the current pace, October closes at <em>~" + t(S.mes.projecao) + "</em>: " + t(S.mes.falta) + " short of the schedule") + "</h3>" +
+      '<div class="sl-cards" style="--n:4"><div class="sl-card"><span>' + tr("Cadenciado", "Scheduled") + "</span><b>" + count(S.mes.cadenciado, " t") + '</b></div><div class="sl-card ok"><span>' + tr("Faturado até hoje", "Billed to date") + "</span><b>" + count(S.mes.faturado, " t") +
+      '</b></div><div class="sl-card"><span>' + tr("Projeção", "Projection") + "</span><b>~" + t(S.mes.projecao) + '</b></div><div class="sl-card warn"><span>' + tr("Saldo de cadência", "Remaining schedule") + "</span><b>" + count(S.mes.saldoCadencia, " t") + "</b></div></div>" +
       '<div class="rail"><s style="width:' + (S.mes.projecao / S.mes.cadenciado * 100).toFixed(1) + '%"></s><i class="bar-x" style="width:' + (S.mes.faturado / S.mes.cadenciado * 100).toFixed(1) + '%"></i>' +
-      '<span class="mk" style="left:' + S.mes.proRataPct + '%"><span>pro-rata</span></span><span class="mk cad" style="left:calc(100% - 3px)"><span>cadência</span></span></div>' +
-      '<p class="sl-sub">Para cumprir: <strong>' + S.mes.porDia + " t por dia útil</strong> nos " + S.mes.diasRestantes + " dias que faltam.</p></div>",
+      '<span class="mk" style="left:' + S.mes.proRataPct + '%"><span>pro-rata</span></span><span class="mk cad" style="left:calc(100% - 3px)"><span>' + tr("cadência", "schedule") + "</span></span></div>" +
+      '<p class="sl-sub">' + tr("Para cumprir: <strong>" + S.mes.porDia + " t por dia útil</strong> nos " + S.mes.diasRestantes + " dias que faltam.",
+                               "To hit it: <strong>" + S.mes.porDia + " t per business day</strong> over the remaining " + S.mes.diasRestantes + " days.") + "</p></div>",
 
     (function () {
       var max = Math.max.apply(null, S.historico.map(function (h) { return h[1]; }));
-      return '<div class="slide"><p class="label">3 · Histórico na mesma janela</p><h3>Retiradas de jan a out, ano a ano</h3><div class="sl-hist">' +
+      return '<div class="slide"><p class="label">' + tr("3 · Histórico na mesma janela", "3 · Same window, prior years") + "</p><h3>" + tr("Retiradas de jan a out, ano a ano", "Pickups from January to October, year over year") + '</h3><div class="sl-hist">' +
         S.historico.map(function (h) { return "<div><b>" + (h[2] ? "~" : "") + t(h[1]) + '</b><i class="bar-y' + (h[2] ? " proj" : "") + '" style="height:' + (h[1] / max * 78).toFixed(1) + '%"></i><span>' + h[0] + "</span></div>"; }).join("") + "</div></div>";
     })(),
 
     (function () {
-      var max = S.unidades[0][1], st = { acelerar: ["acelerar", "warn"], ok: ["no ritmo", "ok"], atencao: ["atenção", "bad"] };
-      return '<div class="slide"><p class="label">4 · Por unidade</p><h3>Saldo a retirar por unidade</h3><ul class="sl-units">' +
+      var max = S.unidades[0][1], st = { acelerar: [tr("acelerar", "speed up"), "warn"], ok: [tr("no ritmo", "on pace"), "ok"], atencao: [tr("atenção", "watch"), "bad"] };
+      return '<div class="slide"><p class="label">' + tr("4 · Por unidade", "4 · By site") + "</p><h3>" + tr("Saldo a retirar por unidade", "Balance left to pick up, by site") + '</h3><ul class="sl-units">' +
         S.unidades.map(function (u) { return "<li><span>" + u[0] + '</span><span class="track"><i class="bar-x" style="width:' + (u[1] / max * 100).toFixed(1) + '%"></i></span><b>' + t(u[1]) + '</b><span class="pill ' + st[u[2]][1] + '">' + st[u[2]][0] + "</span></li>"; }).join("") + "</ul></div>";
     })()
   ];
   var track = $("#car-track"), dots = $("#car-dots"), cur = 0;
   track.innerHTML = slides.join("");
   var slideEls = $$(".slide", track);
-  slideEls.forEach(function (s, i) { s.setAttribute("role", "group"); s.setAttribute("aria-roledescription", "slide"); s.setAttribute("aria-label", (i + 1) + " de " + slides.length); s.classList.add("anim"); });
-  dots.innerHTML = slides.map(function (_, i) { return '<button type="button" aria-label="Ir para o slide ' + (i + 1) + '"></button>'; }).join("");
+  slideEls.forEach(function (s, i) { s.setAttribute("role", "group"); s.setAttribute("aria-roledescription", "slide"); s.setAttribute("aria-label", (i + 1) + tr(" de ", " of ") + slides.length); s.classList.add("anim"); });
+  dots.innerHTML = slides.map(function (_, i) { return '<button type="button" aria-label="' + tr("Ir para o slide ", "Go to slide ") + (i + 1) + '"></button>'; }).join("");
   var dotEls = $$("button", dots);
   function goSlide(i) {
     cur = (i + slides.length) % slides.length;
@@ -423,7 +455,7 @@
       if (on) { s.classList.remove("in"); void s.offsetWidth; s.classList.add("in"); $$("[data-count]", s).forEach(animateCount); }
     });
     dotEls.forEach(function (d, j) { d.setAttribute("aria-current", j === cur ? "true" : "false"); });
-    $("#car-live").textContent = "Slide " + (cur + 1) + " de " + slides.length;
+    $("#car-live").textContent = "Slide " + (cur + 1) + tr(" de ", " of ") + slides.length;
   }
   $("#car-prev").addEventListener("click", function () { goSlide(cur - 1); });
   $("#car-next").addEventListener("click", function () { goSlide(cur + 1); });
@@ -475,9 +507,10 @@
   var top = $("#topo"), burger = $("#burger"), menu = $("#menu");
   var onScroll = function () { top.classList.toggle("scrolled", window.scrollY > 8); };
   window.addEventListener("scroll", onScroll, { passive: true }); onScroll();
+  burger.setAttribute("aria-label", tr("Abrir menu", "Open menu"));
   burger.addEventListener("click", function () {
     var open = burger.getAttribute("aria-expanded") !== "true";
-    burger.setAttribute("aria-expanded", open); burger.setAttribute("aria-label", open ? "Fechar menu" : "Abrir menu");
+    burger.setAttribute("aria-expanded", open); burger.setAttribute("aria-label", open ? tr("Fechar menu", "Close menu") : tr("Abrir menu", "Open menu"));
     menu.classList.toggle("open", open);
   });
   $$("a", menu).forEach(function (a) { a.addEventListener("click", function () { burger.setAttribute("aria-expanded", "false"); menu.classList.remove("open"); }); });

@@ -104,7 +104,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* ============ Topo ============ */
 .topbar { position: sticky; top: 0; z-index: 50; transition: background .2s, box-shadow .2s, backdrop-filter .2s; }
 .topbar.scrolled { background: rgba(244, 246, 242, .82); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 1px 0 var(--line); }
-.topbar-in { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+.topbar-in { display: flex; align-items: center; justify-content: space-between; gap: 10px; height: 64px; }
+.lang { margin-left: auto; display: inline-flex; gap: 2px; padding: 3px; background: var(--seg); border-radius: 11px; }
+.lang button { border: 0; background: transparent; min-width: 38px; min-height: 36px; padding: 0 8px; border-radius: 8px; font-size: 13px; font-weight: 800; letter-spacing: .03em; color: var(--muted); }
+.lang button:hover { color: var(--ink); }
+.lang button[aria-pressed="true"] { background: var(--card); color: var(--brand); box-shadow: 0 1px 3px rgba(20, 33, 26, .12); }
+@media (min-width: 900px) { .menu { margin-left: auto; } .lang { margin-left: 6px; } }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); font-weight: 800; }
 .mono { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 10px; background: linear-gradient(135deg, var(--brand-a), var(--brand-b)); color: #fff; font-size: 14px; letter-spacing: -.02em; }
 .brand-name { font-size: 16px; letter-spacing: -.01em; }
